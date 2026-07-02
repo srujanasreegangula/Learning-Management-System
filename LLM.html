@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LearnFlow — Learning Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{--bg:#0b0e14;--bg2:#111620;--card:#161d2a;--cardh:#1c2536;--fg:#e8ecf4;--mut:#7a8499;--dim:#4a5468;--ac:#00d4aa;--acd:rgba(0,212,170,.12);--acg:rgba(0,212,170,.25);--or:#ff6b4a;--ord:rgba(255,107,74,.12);--wn:#ffb84d;--wnd:rgba(255,184,77,.12);--ok:#34d399;--er:#f87171;--bd:rgba(255,255,255,.06);--bda:rgba(0,212,170,.3);--r:14px;--rs:8px;--rl:20px;--sh:0 4px 24px rgba(0,0,0,.3);--shl:0 12px 48px rgba(0,0,0,.5);--t:.3s cubic-bezier(.4,0,.2,1);--fd:'Space Grotesk',sans-serif;--fb:'DM Sans',sans-serif}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--fb);background:var(--bg);color:var(--fg);line-height:1.6;overflow-x:hidden;min-height:100vh}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--dim);border-radius:3px}
+.page{display:none;opacity:0;transform:translateY(12px);transition:opacity .4s,transform .4s;min-height:100vh}
+.page.on{display:block;opacity:1;transform:translateY(0)}
+.g1{position:fixed;top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,var(--acg),transparent 70%);pointer-events:none;z-index:0;filter:blur(80px);opacity:.4}
+.g2{position:fixed;bottom:-300px;left:-200px;width:700px;height:700px;background:radial-gradient(circle,rgba(255,107,74,.1),transparent 70%);pointer-events:none;z-index:0;filter:blur(100px);opacity:.3}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(11,14,20,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--bd);padding:0 32px;height:68px;display:flex;align-items:center;justify-content:space-between;transition:var(--t)}
+nav.sc{background:rgba(11,14,20,.95)}
+.logo{font-family:var(--fd);font-size:1.4rem;font-weight:700;color:var(--fg);cursor:pointer;display:flex;align-items:center;gap:10px}
+.logoi{width:36px;height:36px;background:linear-gradient(135deg,var(--ac),#00a88a);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--bg)}
+.navl{display:flex;gap:8px}
+.nl{padding:8px 16px;border-radius:var(--rs);font-size:.9rem;color:var(--mut);cursor:pointer;transition:var(--t);border:none;background:none;font-family:var(--fb);font-weight:500}
+.nl:hover,.nl.on{color:var(--fg);background:var(--acd)}.nl.on{color:var(--ac)}
+.navr{display:flex;align-items:center;gap:12px}
+.navav{width:38px;height:38px;border-radius:50%;cursor:pointer;border:2px solid var(--bd);transition:var(--t)}
+.navav:hover{border-color:var(--ac)}
+.burg{display:none;background:none;border:none;color:var(--fg);font-size:1.3rem;cursor:pointer;padding:8px}
+.mobnav{display:none;position:fixed;top:68px;left:0;right:0;bottom:0;background:rgba(11,14,20,.97);backdrop-filter:blur(20px);z-index:999;flex-direction:column;padding:24px;gap:4px}
+.mobnav.open{display:flex}.mobnav .nl{font-size:1.1rem;padding:14px 16px;text-align:left}
+
+/* BTN */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:var(--rs);font-family:var(--fb);font-weight:600;font-size:.9rem;border:none;cursor:pointer;transition:var(--t);text-decoration:none;line-height:1}
+.bp{background:linear-gradient(135deg,var(--ac),#00a88a);color:var(--bg);box-shadow:0 4px 16px var(--acg)}
+.bp:hover{transform:translateY(-2px);box-shadow:0 6px 24px var(--acg)}
+.bs{background:var(--card);color:var(--fg);border:1px solid var(--bd)}.bs:hover{border-color:var(--ac);background:var(--cardh)}
+.bgh{background:transparent;color:var(--mut)}.bgh:hover{color:var(--fg);background:var(--acd)}
+.bsm{padding:8px 16px;font-size:.82rem}.blg{padding:16px 32px;font-size:1rem}.blk{width:100%;justify-content:center}
+.btn:active{transform:scale(.97)}
+
+/* FORM */
+.fg{margin-bottom:20px}.fl{display:block;font-size:.85rem;font-weight:600;color:var(--mut);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.fi{width:100%;padding:14px 16px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rs);color:var(--fg);font-family:var(--fb);font-size:.95rem;transition:var(--t);outline:none}
+.fi:focus{border-color:var(--ac);box-shadow:0 0 0 3px var(--acd)}.fi::placeholder{color:var(--dim)}
+
+/* CARD */
+.cd{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;transition:var(--t)}
+.cd:hover{border-color:rgba(255,255,255,.1);transform:translateY(-4px);box-shadow:var(--sh)}
+.cdi{width:100%;height:180px;object-fit:cover;display:block}
+.cdb{padding:20px}
+.tag{display:inline-block;padding:4px 10px;border-radius:20px;font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.td{background:rgba(168,85,247,.15);color:#c084fc}.tv{background:var(--acd);color:var(--ac)}.tb{background:var(--wnd);color:var(--wn)}.ta{background:var(--ord);color:var(--or)}
+.cdt{font-family:var(--fd);font-size:1.1rem;font-weight:600;margin-bottom:8px;line-height:1.4}
+.cdp{font-size:.85rem;color:var(--mut);margin-bottom:16px;line-height:1.5}
+.cdf{display:flex;align-items:center;justify-content:space-between;padding-top:16px;border-top:1px solid var(--bd)}
+.cdm{display:flex;gap:12px;font-size:.8rem;color:var(--dim)}.cdm i{margin-right:4px}
+
+/* PROGRESS */
+.pb{width:100%;height:8px;background:var(--bg2);border-radius:4px;overflow:hidden}
+.pf{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.4,0,.2,1);background:linear-gradient(90deg,var(--ac),#00a88a)}
+.pfo{background:linear-gradient(90deg,var(--or),#ff8a6b)}.pfy{background:linear-gradient(90deg,var(--wn),#ffc970)}
+
+/* LAYOUT */
+.sec{padding:100px 32px 60px;position:relative;z-index:1}
+.sch{margin-bottom:40px}.sct{font-family:var(--fd);font-size:2rem;font-weight:700;margin-bottom:8px}.scs{color:var(--mut);font-size:1rem}
+.gr{display:grid;gap:24px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+.ctn{max-width:1200px;margin:0 auto}
+.lay{display:flex;gap:32px}.side{width:280px;flex-shrink:0}.sids{position:sticky;top:92px}.mnc{flex:1;min-width:0}
+
+/* STAT */
+.stc{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:24px;transition:var(--t)}
+.stc:hover{border-color:var(--bda)}
+.sti{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:16px}
+.stv{font-family:var(--fd);font-size:2rem;font-weight:700}.stl{color:var(--mut);font-size:.85rem;margin-top:4px}
+
+/* BADGE */
+.bdg{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:600}
+.bok{background:rgba(52,211,153,.15);color:var(--ok)}.bwn{background:var(--wnd);color:var(--wn)}.ber{background:rgba(248,113,113,.15);color:var(--er)}
+
+/* TABLE */
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:14px 16px;font-size:.8rem;text-transform:uppercase;letter-spacing:.5px;color:var(--dim);border-bottom:1px solid var(--bd);font-weight:600}
+td{padding:16px;border-bottom:1px solid var(--bd);font-size:.9rem}tr:hover td{background:rgba(255,255,255,.02)}
+
+/* AVATAR */
+.av{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--bd)}
+.avs{width:32px;height:32px}.avl{width:80px;height:80px}.avx{width:120px;height:120px;border-width:3px;border-color:var(--ac)}
+
+/* TABS */
+.tabs{display:flex;gap:4px;background:var(--bg2);padding:4px;border-radius:var(--rs);margin-bottom:24px;width:fit-content}
+.tb{padding:10px 20px;border-radius:6px;font-size:.85rem;font-weight:500;color:var(--mut);cursor:pointer;transition:var(--t);border:none;background:none;font-family:var(--fb)}
+.tb.on{background:var(--card);color:var(--fg);box-shadow:0 2px 8px rgba(0,0,0,.2)}.tb:hover:not(.on){color:var(--fg)}
+
+/* TOAST */
+.tc{position:fixed;top:80px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{padding:14px 20px;border-radius:var(--rs);font-size:.88rem;display:flex;align-items:center;gap:10px;min-width:280px;background:var(--card);border:1px solid var(--bd);box-shadow:var(--shl);animation:tin .4s ease;font-family:var(--fb)}
+.toast.rm{animation:tout .3s ease forwards}
+.tok i{color:var(--ok)}.ter i{color:var(--er)}.tin2 i{color:var(--ac)}
+@keyframes tin{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes tout{to{opacity:0;transform:translateX(40px)}}
+
+/* MODAL */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:2000;display:none;align-items:center;justify-content:center;padding:24px}
+.mo.open{display:flex}
+.mdl{background:var(--card);border:1px solid var(--bd);border-radius:var(--rl);max-width:500px;width:100%;padding:32px;box-shadow:var(--shl);animation:modin .3s ease}
+@keyframes modin{from{opacity:0;transform:scale(.95) translateY(10px)}}
+.mdh{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.mdt{font-family:var(--fd);font-size:1.3rem;font-weight:700}
+.mdx{background:none;border:none;color:var(--mut);font-size:1.2rem;cursor:pointer;padding:4px}.mdx:hover{color:var(--fg)}
+
+/* QUIZ */
+.qo{display:flex;align-items:center;gap:14px;padding:16px 20px;background:var(--bg2);border:2px solid var(--bd);border-radius:var(--rs);cursor:pointer;transition:var(--t);margin-bottom:10px}
+.qo:hover{border-color:rgba(255,255,255,.15);background:var(--card)}
+.qo.sel{border-color:var(--ac);background:var(--acd)}
+.qo.cor{border-color:var(--ok);background:rgba(52,211,153,.1)}
+.qo.wrg{border-color:var(--er);background:rgba(248,113,113,.1)}
+.qol{width:32px;height:32px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0;transition:var(--t)}
+.qo.sel .qol{background:var(--ac);color:var(--bg)}.qo.cor .qol{background:var(--ok);color:#fff}.qo.wrg .qol{background:var(--er);color:#fff}
+
+/* LESSON */
+.lei{display:flex;align-items:center;gap:16px;padding:16px 20px;background:var(--card);border:1px solid var(--bd);border-radius:var(--rs);cursor:pointer;transition:var(--t)}
+.lei:hover{border-color:var(--bda);background:var(--cardh)}.lei.dn{opacity:.7}
+.len{width:36px;height:36px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0}
+.lei.dn .len{background:var(--ac);color:var(--bg)}
+.lef{flex:1}.let{font-weight:600;font-size:.95rem;margin-bottom:2px}.led{font-size:.8rem;color:var(--dim)}
+
+/* ASSIGNMENT */
+.asc{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:24px;transition:var(--t)}
+.asc:hover{border-color:rgba(255,255,255,.1)}
+.ash{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.ast{font-family:var(--fd);font-weight:600;font-size:1.05rem}
+.asd{font-size:.85rem;color:var(--mut);margin-bottom:16px;line-height:1.5}
+.asm{display:flex;gap:16px;font-size:.8rem;color:var(--dim)}.asm i{margin-right:4px}
+
+/* HERO */
+.hero{padding:160px 32px 80px;position:relative;z-index:1;display:flex;align-items:center;min-height:90vh}
+.hc{max-width:650px}
+.hbb{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;background:var(--acd);border:1px solid var(--bda);border-radius:30px;font-size:.82rem;font-weight:600;color:var(--ac);margin-bottom:24px}
+.hbb .dot{width:6px;height:6px;border-radius:50%;background:var(--ac);animation:pu 2s infinite}
+@keyframes pu{0%,100%{opacity:1}50%{opacity:.4}}
+.hero h1{font-family:var(--fd);font-size:clamp(2.5rem,5vw,4rem);font-weight:700;line-height:1.1;margin-bottom:20px}
+.hero h1 .ac2{color:var(--ac)}
+.hero>p{font-size:1.15rem;color:var(--mut);margin-bottom:36px;max-width:520px;line-height:1.7}
+.ha{display:flex;gap:12px;flex-wrap:wrap}
+.hst{display:flex;gap:40px;margin-top:60px}
+.hsv{font-family:var(--fd);font-size:1.8rem;font-weight:700}.hsl{font-size:.82rem;color:var(--dim);margin-top:2px}
+.hv{flex:1;display:flex;justify-content:center;align-items:center;position:relative;min-height:400px}
+.hcs{position:relative;width:340px;height:380px}
+.hfc{position:absolute;background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:20px;box-shadow:var(--shl);animation:fl 6s ease-in-out infinite}
+.hfc:nth-child(1){top:0;left:0;width:280px}.hfc:nth-child(2){top:80px;left:40px;width:280px;animation-delay:-2s}.hfc:nth-child(3){top:160px;left:20px;width:280px;animation-delay:-4s}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+/* FEATURE */
+.fcc{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:32px;transition:var(--t)}
+.fcc:hover{border-color:var(--bda);transform:translateY(-4px)}
+.fci{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:20px}
+
+/* AUTH */
+.apg{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:100px 24px 40px;position:relative;z-index:1}
+.akc{background:var(--card);border:1px solid var(--bd);border-radius:var(--rl);padding:40px;max-width:440px;width:100%;box-shadow:var(--shl)}
+.akt{font-family:var(--fd);font-size:1.6rem;font-weight:700;margin-bottom:8px}
+.aks{color:var(--mut);font-size:.9rem;margin-bottom:32px}
+.adiv{display:flex;align-items:center;gap:16px;margin:24px 0;color:var(--dim);font-size:.82rem}
+.adiv::before,.adiv::after{content:'';flex:1;height:1px;background:var(--bd)}
+.asw{text-align:center;margin-top:24px;font-size:.88rem;color:var(--mut)}
+.asw a{color:var(--ac);cursor:pointer;font-weight:600;text-decoration:none}.asw a:hover{text-decoration:underline}
+.sob{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:12px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rs);color:var(--fg);font-family:var(--fb);font-size:.9rem;font-weight:500;cursor:pointer;transition:var(--t)}
+.sob:hover{border-color:rgba(255,255,255,.15);background:var(--cardh)}
+
+/* PROFILE */
+.phc{background:var(--card);border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden}
+.pcv{height:160px;background:linear-gradient(135deg,rgba(0,212,170,.3),rgba(255,107,74,.2))}
+.pif{padding:0 32px 32px;position:relative}
+.paw{margin-top:-50px;margin-bottom:16px;display:flex;align-items:flex-end;gap:16px}
+.pn{font-family:var(--fd);font-size:1.5rem;font-weight:700}.prl{color:var(--mut);font-size:.9rem}
+.psr{display:flex;gap:32px;margin-top:20px;padding-top:20px;border-top:1px solid var(--bd);flex-wrap:wrap}
+.pst{text-align:center}.pstv{font-family:var(--fd);font-weight:700;font-size:1.2rem}.pstl{font-size:.78rem;color:var(--dim);margin-top:2px}
+
+/* COURSE DETAIL */
+.che{padding:120px 32px 40px;position:relative;z-index:1}.chi{max-width:800px}
+.cin{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.cinn{font-weight:600;font-size:.9rem}.cinl{font-size:.8rem;color:var(--dim)}
+.cht{font-family:var(--fd);font-size:clamp(2rem,4vw,3rem);font-weight:700;line-height:1.15;margin-bottom:16px}
+.chdd{color:var(--mut);font-size:1.05rem;line-height:1.7;margin-bottom:24px;max-width:600px}
+.cmb{display:flex;gap:24px;flex-wrap:wrap;font-size:.88rem;color:var(--mut)}.cmb i{color:var(--ac);margin-right:6px}
+
+/* VIDEO PLAYER */
+.vp{background:#000;border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden;margin:24px 32px;aspect-ratio:16/9;position:relative;max-width:900px}
+.vp video{width:100%;height:100%;display:block;object-fit:contain;background:#000}
+.vc{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.85));padding:40px 16px 12px;display:flex;align-items:center;gap:12px;opacity:0;transition:opacity .3s}
+.vp:hover .vc,.vc.sh{opacity:1}
+.vb{background:none;border:none;color:#fff;font-size:1rem;cursor:pointer;padding:4px 6px;transition:var(--t);opacity:.9}.vb:hover{opacity:1;transform:scale(1.1)}
+.vpr{flex:1;height:5px;background:rgba(255,255,255,.2);border-radius:3px;cursor:pointer;position:relative;transition:height .15s}
+.vpr:hover{height:8px;margin-top:-1.5px}
+.vpf{height:100%;background:var(--ac);border-radius:3px;width:0%;pointer-events:none;position:relative}
+.vpr:hover .vpf::after{content:'';position:absolute;right:-6px;top:50%;transform:translateY(-50%);width:14px;height:14px;background:var(--ac);border-radius:50%;box-shadow:0 0 8px var(--acg)}
+.vtm{font-size:.75rem;color:rgba(255,255,255,.8);white-space:nowrap;font-variant-numeric:tabular-nums;min-width:85px;text-align:center}
+.vvol{display:flex;align-items:center;gap:6px}
+.vvs{width:70px;height:4px;-webkit-appearance:none;appearance:none;background:rgba(255,255,255,.2);border-radius:2px;outline:none;cursor:pointer}
+.vvs::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;background:#fff;border-radius:50%;cursor:pointer}
+.vo{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3);cursor:pointer;transition:opacity .3s}
+.vo.hid{opacity:0;pointer-events:none}
+.pbb{width:72px;height:72px;border-radius:50%;background:var(--ac);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:1.5rem;transition:var(--t);box-shadow:0 8px 32px var(--acg);border:none;cursor:pointer}
+.pbb:hover{transform:scale(1.1)}
+
+/* FILE UPLOAD */
+.uz{border:2px dashed var(--bd);border-radius:var(--rs);padding:32px;text-align:center;cursor:pointer;transition:var(--t);position:relative}
+.uz:hover,.uz.dg{border-color:var(--ac);background:var(--acd)}
+.uz input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;z-index:2}
+.uz.hf{border-color:var(--ok);border-style:solid;background:rgba(52,211,153,.06)}
+.uf{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rs);margin-top:12px;animation:tin .3s ease}
+.ufi{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.ufn{flex:1;min-width:0;overflow:hidden}
+.ufnn{font-size:.88rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ufns{font-size:.78rem;color:var(--dim)}
+.ufr{background:none;border:none;color:var(--dim);cursor:pointer;padding:4px;font-size:.9rem;transition:var(--t)}.ufr:hover{color:var(--er)}
+
+/* CIRCLE PROG */
+.cp{position:relative;width:100px;height:100px}
+.cp svg{transform:rotate(-90deg)}
+.cp .cv{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:700;font-size:1.3rem}
+
+/* FILTER */
+.fp{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.fpi{padding:8px 18px;border-radius:30px;font-size:.82rem;font-weight:500;background:var(--bg2);border:1px solid var(--bd);color:var(--mut);cursor:pointer;transition:var(--t);font-family:var(--fb)}
+.fpi:hover{border-color:rgba(255,255,255,.15);color:var(--fg)}
+.fpi.on{background:var(--acd);border-color:var(--bda);color:var(--ac)}
+
+/* QUIZ RESULT */
+.qr{text-align:center;padding:40px}.qrs{font-family:var(--fd);font-size:4rem;font-weight:700;margin-bottom:8px}.qrl{color:var(--mut);font-size:1.1rem;margin-bottom:32px}
+
+/* ANIM */
+.fu{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease}
+.fu.vis{opacity:1;transform:translateY(0)}
+.s1{transition-delay:.1s}.s2{transition-delay:.2s}.s3{transition-delay:.3s}.s4{transition-delay:.4s}
+.dv{height:1px;background:var(--bd);margin:32px 0}
+.mt8{margin-top:8px}.mt16{margin-top:16px}.mt24{margin-top:24px}.mt32{margin-top:32px}
+.mb8{margin-bottom:8px}.mb16{margin-bottom:16px}.mb24{margin-bottom:24px}.mb32{margin-bottom:32px}
+.flx{display:flex}.aic{align-items:center}.jcsb{justify-content:space-between}.fw{flex-wrap:wrap}
+.tac{text-align:center}.w100{width:100%}.hidden{display:none!important}
+
+@media(max-width:1024px){.g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(2,1fr)}.lay{flex-direction:column}.side{width:100%}.sids{position:static}.hv{display:none}.hero{justify-content:center;text-align:center}.hero>p{margin-left:auto;margin-right:auto}.ha{justify-content:center}.hst{justify-content:center}}
+@media(max-width:768px){.sec{padding:90px 20px 40px}nav{padding:0 20px}.navl{display:none}.burg{display:block}.g2,.g3,.g4{grid-template-columns:1fr}.hero{padding:130px 20px 60px;min-height:auto}.hst{gap:24px;flex-wrap:wrap}.che{padding:100px 20px 30px}.vp{margin:20px}.akc{padding:28px 20px}.pif{padding:0 20px 24px}.psr{gap:20px}.vvol{display:none}}
+</style>
+</head>
+<body>
+<div class="g1"></div><div class="g2"></div>
+
+<nav id="navbar">
+  <div class="logo" onclick="go('home')"><div class="logoi"><i class="fa-solid fa-graduation-cap"></i></div>LearnFlow</div>
+  <div class="navl" id="navL">
+    <button class="nl" data-p="home" onclick="go('home')">Home</button>
+    <button class="nl" data-p="courses" onclick="go('courses')">Courses</button>
+    <button class="nl" data-p="dashboard" onclick="go('dashboard')">Dashboard</button>
+    <button class="nl" data-p="assignments" onclick="go('assignments')">Assignments</button>
+    <button class="nl" data-p="profile" onclick="go('profile')">Profile</button>
+  </div>
+  <div class="navr">
+    <img class="navav" src="https://api.dicebear.com/9.x/adventurer/svg?seed=Sophia&gender=female&earrings=variant03&glasses=variant02&hair=long22&mouth=smile01&eyes=variant07&skinColor=d4a574" alt="Sophia" onclick="go('profile')">
+    <button class="burg" onclick="toggleMob()"><i class="fa-solid fa-bars"></i></button>
+  </div>
+</nav>
+<div class="mobnav" id="mobNav">
+  <button class="nl" onclick="go('home');toggleMob()">Home</button>
+  <button class="nl" onclick="go('courses');toggleMob()">Courses</button>
+  <button class="nl" onclick="go('dashboard');toggleMob()">Dashboard</button>
+  <button class="nl" onclick="go('assignments');toggleMob()">Assignments</button>
+  <button class="nl" onclick="go('profile');toggleMob()">Profile</button>
+  <div class="dv"></div>
+  <button class="nl" onclick="go('login');toggleMob()">Sign Out</button>
+</div>
+<div class="tc" id="toastC"></div>
+
+<!-- HOME -->
+<div class="page on" id="pg-home">
+  <div class="hero">
+    <div style="display:flex;align-items:center;width:100%;max-width:1200px;margin:0 auto;gap:60px;flex-wrap:wrap">
+      <div class="hc">
+        <div class="hbb"><span class="dot"></span> New courses available weekly</div>
+        <h1>Master New Skills<br>with <span class="ac2">LearnFlow</span></h1>
+        <p>Access expert-led courses in design, development, data science, and business. Track your progress and earn certificates.</p>
+        <div class="ha">
+          <button class="btn bp blg" onclick="go('courses')"><i class="fa-solid fa-rocket"></i> Explore Courses</button>
+          <button class="btn bs blg" onclick="go('login')"><i class="fa-solid fa-play"></i> Get Started</button>
+        </div>
+        <div class="hst">
+          <div><div class="hsv">12K+</div><div class="hsl">Active Students</div></div>
+          <div><div class="hsv">340+</div><div class="hsl">Courses</div></div>
+          <div><div class="hsv">98%</div><div class="hsl">Satisfaction</div></div>
+        </div>
+      </div>
+      <div class="hv">
+        <div class="hcs">
+          <div class="hfc"><div class="flx aic" style="gap:8px;margin-bottom:16px"><img src="https://picsum.photos/seed/c1/40/40.jpg" class="avs" style="border-radius:8px" alt=""><div><div style="font-weight:600;font-size:.85rem">UI Design Fundamentals</div><div style="font-size:.75rem;color:var(--dim)">Sarah Chen</div></div></div><div class="pb mb8"><div class="pf" style="width:72%"></div></div><div class="flx jcsb" style="font-size:.78rem;color:var(--dim)"><span>72% Complete</span><span>18/25 lessons</span></div></div>
+          <div class="hfc"><div class="flx aic" style="gap:8px;margin-bottom:16px"><img src="https://picsum.photos/seed/c2/40/40.jpg" class="avs" style="border-radius:8px" alt=""><div><div style="font-weight:600;font-size:.85rem">JavaScript Mastery</div><div style="font-size:.75rem;color:var(--dim)">Alex Rivera</div></div></div><div class="pb mb8"><div class="pf pfo" style="width:45%"></div></div><div class="flx jcsb" style="font-size:.78rem;color:var(--dim)"><span>45% Complete</span><span>14/31 lessons</span></div></div>
+          <div class="hfc"><div class="flx aic" style="gap:8px;margin-bottom:16px"><img src="https://picsum.photos/seed/c3/40/40.jpg" class="avs" style="border-radius:8px" alt=""><div><div style="font-weight:600;font-size:.85rem">Data Science A-Z</div><div style="font-size:.75rem;color:var(--dim)">Priya Sharma</div></div></div><div class="pb mb8"><div class="pf pfy" style="width:88%"></div></div><div class="flx jcsb" style="font-size:.78rem;color:var(--dim)"><span>88% Complete</span><span>22/25 lessons</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <section class="sec" style="padding-top:40px">
+    <div class="ctn">
+      <div class="sch tac fu"><div class="sct">Why LearnFlow?</div><div class="scs">Everything you need to accelerate your learning journey</div></div>
+      <div class="gr g4 mt32">
+        <div class="fcc fu s1"><div class="fci" style="background:var(--acd);color:var(--ac)"><i class="fa-solid fa-route"></i></div><div style="font-family:var(--fd);font-weight:600;font-size:1.05rem;margin-bottom:8px">Structured Paths</div><div style="font-size:.88rem;color:var(--mut);line-height:1.6">Follow curated learning paths designed by industry experts to build skills systematically.</div></div>
+        <div class="fcc fu s2"><div class="fci" style="background:var(--ord);color:var(--or)"><i class="fa-solid fa-chart-line"></i></div><div style="font-family:var(--fd);font-weight:600;font-size:1.05rem;margin-bottom:8px">Progress Tracking</div><div style="font-size:.88rem;color:var(--mut);line-height:1.6">Visual dashboards show your progress, streaks, and achievements in real time.</div></div>
+        <div class="fcc fu s3"><div class="fci" style="background:var(--wnd);color:var(--wn)"><i class="fa-solid fa-clipboard-question"></i></div><div style="font-family:var(--fd);font-weight:600;font-size:1.05rem;margin-bottom:8px">Interactive Quizzes</div><div style="font-size:.88rem;color:var(--mut);line-height:1.6">Test your understanding with quizzes after every module and get instant feedback.</div></div>
+        <div class="fcc fu s4"><div class="fci" style="background:rgba(168,85,247,.15);color:#c084fc"><i class="fa-solid fa-certificate"></i></div><div style="font-family:var(--fd);font-weight:600;font-size:1.05rem;margin-bottom:8px">Certificates</div><div style="font-size:.88rem;color:var(--mut);line-height:1.6">Earn verified certificates upon course completion to showcase your accomplishments.</div></div>
+      </div>
+    </div>
+  </section>
+  <section class="sec" style="padding-top:20px">
+    <div class="ctn">
+      <div class="flx jcsb aic fw fu" style="gap:16px"><div><div class="sct">Popular Courses</div><div class="scs">Start learning from the most loved courses</div></div><button class="btn bs" onclick="go('courses')">View All <i class="fa-solid fa-arrow-right"></i></button></div>
+      <div class="gr g3 mt32" id="homeGrid"></div>
+    </div>
+  </section>
+  <footer style="padding:40px 32px;border-top:1px solid var(--bd);position:relative;z-index:1">
+    <div class="ctn flx jcsb aic fw" style="font-size:.85rem;color:var(--dim);gap:16px">
+      <div class="logo" style="font-size:1.1rem" onclick="go('home')"><div class="logoi" style="width:30px;height:30px;font-size:.8rem"><i class="fa-solid fa-graduation-cap"></i></div>LearnFlow</div>
+      <div>2026 LearnFlow. Built for learning, designed for impact.</div>
+      <div class="flx" style="gap:16px"><a href="#" style="color:var(--dim);transition:var(--t)" onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--dim)'"><i class="fa-brands fa-twitter"></i></a><a href="#" style="color:var(--dim);transition:var(--t)" onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--dim)'"><i class="fa-brands fa-github"></i></a><a href="#" style="color:var(--dim);transition:var(--t)" onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--dim)'"><i class="fa-brands fa-linkedin"></i></a></div>
+    </div>
+  </footer>
+</div>
+
+<!-- LOGIN -->
+<div class="page" id="pg-login">
+  <div class="apg">
+    <div class="akc fu">
+      <div class="tac mb24"><div class="logo" style="justify-content:center;font-size:1.2rem;margin-bottom:24px" onclick="go('home')"><div class="logoi" style="width:32px;height:32px;font-size:.85rem"><i class="fa-solid fa-graduation-cap"></i></div>LearnFlow</div><div class="akt">Welcome back</div><div class="aks">Sign in to continue your learning journey</div></div>
+      <button class="sob" onclick="toast('Google sign-in is a demo feature','in')"><i class="fa-brands fa-google"></i> Continue with Google</button>
+      <div class="adiv">or sign in with email</div>
+      <form onsubmit="doLogin(event)">
+        <div class="fg"><label class="fl">Email Address</label><input class="fi" type="email" placeholder="sophia@example.com" required></div>
+        <div class="fg"><label class="fl">Password</label><input class="fi" type="password" placeholder="Enter your password" required></div>
+        <div class="flx jcsb aic mb24" style="font-size:.85rem"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--mut)"><input type="checkbox" style="accent-color:var(--ac)"> Remember me</label><a href="#" style="color:var(--ac);text-decoration:none" onclick="event.preventDefault();toast('Password reset link sent!','ok')">Forgot password?</a></div>
+        <button class="btn bp blk blg" type="submit">Sign In</button>
+      </form>
+      <div class="asw">Don't have an account? <a onclick="go('register')">Create one</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- REGISTER -->
+<div class="page" id="pg-register">
+  <div class="apg">
+    <div class="akc fu">
+      <div class="tac mb24"><div class="logo" style="justify-content:center;font-size:1.2rem;margin-bottom:24px" onclick="go('home')"><div class="logoi" style="width:32px;height:32px;font-size:.85rem"><i class="fa-solid fa-graduation-cap"></i></div>LearnFlow</div><div class="akt">Create your account</div><div class="aks">Start learning with 12,000+ students worldwide</div></div>
+      <button class="sob" onclick="toast('Google sign-up is a demo feature','in')"><i class="fa-brands fa-google"></i> Continue with Google</button>
+      <div class="adiv">or register with email</div>
+      <form onsubmit="doReg(event)">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px"><div class="fg"><label class="fl">First Name</label><input class="fi" placeholder="Sophia" required></div><div class="fg"><label class="fl">Last Name</label><input class="fi" placeholder="Mitchell" required></div></div>
+        <div class="fg"><label class="fl">Email Address</label><input class="fi" type="email" placeholder="sophia@example.com" required></div>
+        <div class="fg"><label class="fl">Password</label><input class="fi" type="password" placeholder="Min. 8 characters" required minlength="8"></div>
+        <div class="fg"><label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;color:var(--mut);font-size:.85rem"><input type="checkbox" style="accent-color:var(--ac);margin-top:2px" required> I agree to the Terms of Service and Privacy Policy</label></div>
+        <button class="btn bp blk blg" type="submit">Create Account</button>
+      </form>
+      <div class="asw">Already have an account? <a onclick="go('login')">Sign in</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="page" id="pg-dashboard">
+  <section class="sec"><div class="ctn">
+    <div class="sch fu"><div class="sct">Dashboard</div><div class="scs">Welcome back, Sophia. Keep the momentum going.</div></div>
+    <div class="gr g4 mb32">
+      <div class="stc fu s1"><div class="sti" style="background:var(--acd);color:var(--ac)"><i class="fa-solid fa-book-open"></i></div><div class="stv">4</div><div class="stl">Enrolled Courses</div></div>
+      <div class="stc fu s2"><div class="sti" style="background:var(--ord);color:var(--or)"><i class="fa-solid fa-check-circle"></i></div><div class="stv">67</div><div class="stl">Lessons Completed</div></div>
+      <div class="stc fu s3"><div class="sti" style="background:var(--wnd);color:var(--wn)"><i class="fa-solid fa-clock"></i></div><div class="stv">42h</div><div class="stl">Learning Time</div></div>
+      <div class="stc fu s4"><div class="sti" style="background:rgba(168,85,247,.15);color:#c084fc"><i class="fa-solid fa-trophy"></i></div><div class="stv">2</div><div class="stl">Certificates</div></div>
+    </div>
+    <div class="fu"><div class="flx jcsb aic mb16"><div style="font-family:var(--fd);font-size:1.2rem;font-weight:600">Continue Learning</div><button class="btn bgh bsm" onclick="go('courses')">View All</button></div><div class="gr g2" id="dashGrid"></div></div>
+    <div class="fu mt32"><div style="font-family:var(--fd);font-size:1.2rem;font-weight:600;margin-bottom:16px">Recent Activity</div><div class="cd" style="padding:0;overflow:hidden"><div class="tw"><table><thead><tr><th>Activity</th><th>Course</th><th>Date</th><th>Status</th></tr></thead><tbody id="actTbl"></tbody></table></div></div></div>
+  </div></section>
+</div>
+
+<!-- COURSES -->
+<div class="page" id="pg-courses">
+  <section class="sec"><div class="ctn">
+    <div class="sch fu"><div class="sct">Course Catalog</div><div class="scs">Browse 340+ courses across 4 categories</div></div>
+    <div class="fp fu" id="cFilters"></div>
+    <div class="gr g3" id="cGrid"></div>
+  </div></section>
+</div>
+
+<!-- COURSE DETAIL -->
+<div class="page" id="pg-cdetail">
+  <div class="che"><div class="ctn"><div class="chi fu" id="cdHero"></div></div></div>
+  <div class="vp" id="vpWrap">
+    <video id="cvid" preload="metadata" playsinline><source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4"></video>
+    <div class="vo" id="vidOv" onclick="vidToggle()"><button class="pbb" aria-label="Play"><i class="fa-solid fa-play" style="margin-left:3px"></i></button></div>
+    <div class="vc" id="vidC">
+      <button class="vb" onclick="vidToggle()" id="vbPlay" aria-label="Play"><i class="fa-solid fa-play"></i></button>
+      <div class="vpr" id="vProg" onclick="vidSeek(event)"><div class="vpf" id="vFill"></div></div>
+      <div class="vtm" id="vTime">0:00 / 0:00</div>
+      <div class="vvol"><button class="vb" onclick="vidMute()" id="vbMute" aria-label="Mute"><i class="fa-solid fa-volume-high"></i></button><input type="range" class="vvs" min="0" max="1" step="0.05" value="1" oninput="vidVol(this.value)"></div>
+      <button class="vb" onclick="vidFS()" aria-label="Fullscreen"><i class="fa-solid fa-expand"></i></button>
+    </div>
+  </div>
+  <section class="sec" style="padding-top:20px"><div class="ctn">
+    <div class="lay">
+      <div class="mnc">
+        <div class="tabs" id="cTabs"><button class="tb on" onclick="cTab('ov')">Overview</button><button class="tb" onclick="cTab('ls')">Lessons</button><button class="tb" onclick="cTab('rv')">Reviews</button></div>
+        <div id="cTabC"></div>
+      </div>
+      <div class="side"><div class="sids"><div class="cd" style="padding:24px">
+        <div style="font-family:var(--fd);font-size:1.4rem;font-weight:700;margin-bottom:4px">Free</div>
+        <div style="font-size:.85rem;color:var(--dim);margin-bottom:20px">Lifetime access</div>
+        <button class="btn bp blk mb16" id="enBtn" onclick="doEnroll()">Enroll Now</button>
+        <div style="font-size:.85rem;color:var(--mut);line-height:2">
+          <div><i class="fa-solid fa-signal" style="width:20px;color:var(--ac)"></i> Beginner level</div>
+          <div><i class="fa-solid fa-clock" style="width:20px;color:var(--ac)"></i> <span id="cDur">8 hours</span></div>
+          <div><i class="fa-solid fa-globe" style="width:20px;color:var(--ac)"></i> English</div>
+          <div><i class="fa-solid fa-download" style="width:20px;color:var(--ac)"></i> Resources included</div>
+          <div><i class="fa-solid fa-award" style="width:20px;color:var(--ac)"></i> Certificate of completion</div>
+        </div>
+      </div></div></div>
+    </div>
+  </div></section>
+</div>
+
+<!-- LESSONS -->
+<div class="page" id="pg-lessons">
+  <section class="sec"><div class="ctn">
+    <div class="sch fu"><div class="sct" id="lsTitle">Course Lessons</div><div class="scs" id="lsSub">Work through each lesson at your own pace</div></div>
+    <div class="lay">
+      <div class="mnc"><div id="lsList" style="display:flex;flex-direction:column;gap:10px"></div></div>
+      <div class="side"><div class="sids"><div class="cd" style="padding:24px;text-align:center">
+        <div class="cp" style="margin:0 auto 16px"><svg width="100" height="100"><circle cx="50" cy="50" r="42" fill="none" stroke="var(--bg2)" stroke-width="8"/><circle cx="50" cy="50" r="42" fill="none" stroke="var(--ac)" stroke-width="8" stroke-linecap="round" stroke-dasharray="264" id="lsCirc" stroke-dashoffset="264"/></svg><div class="cv" id="lsPct">0%</div></div>
+        <div style="font-family:var(--fd);font-weight:600;margin-bottom:4px">Course Progress</div>
+        <div style="font-size:.82rem;color:var(--dim)" id="lsTxt">0 of 0 completed</div>
+        <div class="dv"></div>
+        <button class="btn bp blk bsm" onclick="go('quiz',curCid)">Take Quiz</button>
+      </div></div></div>
+    </div>
+  </div></section>
+</div>
+
+<!-- QUIZ -->
+<div class="page" id="pg-quiz">
+  <section class="sec"><div class="ctn" style="max-width:720px"><div id="quizC"></div></div></section>
+</div>
+
+<!-- ASSIGNMENTS -->
+<div class="page" id="pg-assignments">
+  <section class="sec"><div class="ctn">
+    <div class="sch fu"><div class="sct">Assignments</div><div class="scs">Track and submit your coursework</div></div>
+    <div class="tabs fu"><button class="tb on" onclick="filtAsn('all',this)">All</button><button class="tb" onclick="filtAsn('pending',this)">Pending</button><button class="tb" onclick="filtAsn('submitted',this)">Submitted</button><button class="tb" onclick="filtAsn('graded',this)">Graded</button></div>
+    <div id="asnList" style="display:flex;flex-direction:column;gap:16px"></div>
+  </div></section>
+</div>
+
+<!-- PROFILE -->
+<div class="page" id="pg-profile">
+  <section class="sec"><div class="ctn" style="max-width:900px">
+    <div class="phc fu mb32">
+      <div class="pcv"></div>
+      <div class="pif">
+        <div class="paw">
+          <img src="https://api.dicebear.com/9.x/adventurer/svg?seed=Sophia&gender=female&earrings=variant03&glasses=variant02&hair=long22&mouth=smile01&eyes=variant07&skinColor=d4a574" class="avx" alt="Sophia">
+          <div style="padding-bottom:8px"><div class="pn">Sophia Mitchell</div><div class="prl">Full-Stack Developer in Training</div></div>
+        </div>
+        <div class="psr">
+          <div class="pst"><div class="pstv">4</div><div class="pstl">Courses</div></div>
+          <div class="pst"><div class="pstv">67</div><div class="pstl">Lessons</div></div>
+          <div class="pst"><div class="pstv">42h</div><div class="pstl">Learning</div></div>
+          <div class="pst"><div class="pstv">2</div><div class="pstl">Certificates</div></div>
+          <div class="pst"><div class="pstv">15</div><div class="pstl">Day Streak</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="tabs fu"><button class="tb on" onclick="pTab('set',this)">Settings</button><button class="tb" onclick="pTab('cert',this)">Certificates</button><button class="tb" onclick="pTab('log',this)">Activity Log</button></div>
+    <div id="pTabC"></div>
+  </div></section>
+</div>
+
+<!-- SUBMIT MODAL -->
+<div class="mo" id="subModal">
+  <div class="mdl">
+    <div class="mdh"><div class="mdt">Submit Assignment</div><button class="mdx" onclick="closeMo('subModal')"><i class="fa-solid fa-xmark"></i></button></div>
+    <form onsubmit="doSubmit(event)">
+      <div class="fg"><label class="fl">Assignment</label><input class="fi" id="mAsnName" readonly style="opacity:.7"></div>
+      <div class="fg"><label class="fl">Submission Notes</label><textarea class="fi" rows="3" placeholder="Add notes about your submission..." id="mNotes" style="resize:vertical"></textarea></div>
+      <div class="fg">
+        <label class="fl">Attach File</label>
+        <div class="uz" id="uzone">
+          <input type="file" id="fInput" accept=".pdf,.zip,.doc,.docx,.png,.jpg,.jpeg" onchange="handleFile(this)">
+          <i class="fa-solid fa-cloud-arrow-up" style="font-size:1.5rem;color:var(--dim);margin-bottom:8px;display:block"></i>
+          <div style="font-size:.88rem;color:var(--mut)">Click to upload or drag and drop</div>
+          <div style="font-size:.78rem;color:var(--dim);margin-top:4px">PDF, ZIP, DOC, PNG, JPG up to 10MB</div>
+        </div>
+        <div id="fPreview"></div>
+      </div>
+      <div class="flx" style="gap:8px">
+        <button class="btn bs" type="button" onclick="closeMo('subModal')" style="flex:1">Cancel</button>
+        <button class="btn bp" type="submit" style="flex:1">Submit</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+// Girl bitmoji avatar URL
+const AVATAR="https://api.dicebear.com/9.x/adventurer/svg?seed=Sophia&gender=female&earrings=variant03&glasses=variant02&hair=long22&mouth=smile01&eyes=variant07&skinColor=d4a574";
+
+// Course data
+const courses=[
+  {id:1,title:"UI Design Fundamentals",desc:"Learn the core principles of user interface design including typography, color theory, layout, and visual hierarchy to create beautiful, functional interfaces.",inst:"Sarah Chen",instImg:"https://picsum.photos/seed/i1/60/60.jpg",cat:"design",tag:"Design",tc:"td",lessons:25,dur:"8h 30m",stu:2840,rate:4.9,img:"https://picsum.photos/seed/uid/600/400.jpg",prog:72,enr:true},
+  {id:2,title:"JavaScript Mastery: Zero to Hero",desc:"A comprehensive guide to JavaScript covering ES6+, async programming, DOM manipulation, closures, prototypes, and real-world project building.",inst:"Alex Rivera",instImg:"https://picsum.photos/seed/i2/60/60.jpg",cat:"dev",tag:"Development",tc:"tv",lessons:31,dur:"12h 15m",stu:4120,rate:4.8,img:"https://picsum.photos/seed/jsm/600/400.jpg",prog:45,enr:true},
+  {id:3,title:"Data Science A-Z: Complete Bootcamp",desc:"Master data science from statistics and Python basics to machine learning, deep learning, and deploying models in production.",inst:"Priya Sharma",instImg:"https://picsum.photos/seed/i3/60/60.jpg",cat:"data",tag:"Data Science",tc:"ta",lessons:25,dur:"10h 45m",stu:1950,rate:4.7,img:"https://picsum.photos/seed/dsa/600/400.jpg",prog:88,enr:true},
+  {id:4,title:"Digital Marketing Strategy",desc:"Build effective marketing strategies covering SEO, content marketing, social media, email campaigns, paid advertising, and analytics.",inst:"Marcus Johnson",instImg:"https://picsum.photos/seed/i4/60/60.jpg",cat:"biz",tag:"Business",tc:"tb",lessons:18,dur:"6h 20m",stu:3210,rate:4.6,img:"https://picsum.photos/seed/dms/600/400.jpg",prog:0,enr:false},
+  {id:5,title:"React and Next.js: Modern Frontend",desc:"Build production-ready web apps with React 18, Next.js 14, TypeScript, server components, and modern deployment strategies.",inst:"Emily Park",instImg:"https://picsum.photos/seed/i5/60/60.jpg",cat:"dev",tag:"Development",tc:"tv",lessons:28,dur:"14h 00m",stu:2680,rate:4.9,img:"https://picsum.photos/seed/rnx/600/400.jpg",prog:20,enr:true},
+  {id:6,title:"Figma for Product Designers",desc:"Advanced Figma techniques including auto layout, components, variants, design systems, prototyping, and developer handoff workflows.",inst:"Sarah Chen",instImg:"https://picsum.photos/seed/i1/60/60.jpg",cat:"design",tag:"Design",tc:"td",lessons:20,dur:"7h 10m",stu:1540,rate:4.8,img:"https://picsum.photos/seed/fgm/600/400.jpg",prog:0,enr:false},
+  {id:7,title:"Python for Automation",desc:"Automate repetitive tasks with Python: file handling, web scraping, API interactions, scheduling, email automation, and report generation.",inst:"David Kim",instImg:"https://picsum.photos/seed/i6/60/60.jpg",cat:"dev",tag:"Development",tc:"tv",lessons:22,dur:"9h 30m",stu:3890,rate:4.7,img:"https://picsum.photos/seed/pya/600/400.jpg",prog:0,enr:false},
+  {id:8,title:"Business Analytics with Excel",desc:"Transform raw data into business insights using Excel advanced formulas, pivot tables, Power Query, dashboards, and statistical analysis.",inst:"Lisa Wang",instImg:"https://picsum.photos/seed/i7/60/60.jpg",cat:"biz",tag:"Business",tc:"tb",lessons:16,dur:"5h 45m",stu:2340,rate:4.5,img:"https://picsum.photos/seed/exb/600/400.jpg",prog:0,enr:false},
+  {id:9,title:"Machine Learning Engineering",desc:"Go beyond notebooks: ML pipelines, feature stores, model monitoring, A/B testing, MLOps, and scaling ML systems in production.",inst:"Priya Sharma",instImg:"https://picsum.photos/seed/i3/60/60.jpg",cat:"data",tag:"Data Science",tc:"ta",lessons:30,dur:"16h 20m",stu:1280,rate:4.9,img:"https://picsum.photos/seed/mle/600/400.jpg",prog:0,enr:false}
+];
+
+// Lesson data
+const ld={
+  1:[{t:"Introduction to UI Design",d:"12 min",dn:true},{t:"Understanding Design Principles",d:"18 min",dn:true},{t:"Color Theory Deep Dive",d:"22 min",dn:true},{t:"Typography Fundamentals",d:"20 min",dn:true},{t:"Layout and Grid Systems",d:"25 min",dn:true},{t:"Visual Hierarchy",d:"15 min",dn:true},{t:"Designing for Accessibility",d:"18 min",dn:true},{t:"Mobile-First Design",d:"20 min",dn:false},{t:"Component Design Patterns",d:"24 min",dn:false},{t:"Design Handoff to Developers",d:"16 min",dn:false}],
+  2:[{t:"JavaScript Basics and Syntax",d:"20 min",dn:true},{t:"Variables, Types and Operators",d:"25 min",dn:true},{t:"Functions and Scope",d:"22 min",dn:true},{t:"Arrays and Objects",d:"28 min",dn:true},{t:"DOM Manipulation",d:"30 min",dn:true},{t:"Events and Event Delegation",d:"18 min",dn:true},{t:"ES6+ Features",d:"35 min",dn:false},{t:"Async JavaScript",d:"40 min",dn:false},{t:"Closures and Prototypes",d:"32 min",dn:false},{t:"Error Handling",d:"15 min",dn:false}],
+  3:[{t:"What is Data Science?",d:"10 min",dn:true},{t:"Python for Data Science",d:"30 min",dn:true},{t:"Statistics Fundamentals",d:"35 min",dn:true},{t:"Data Wrangling with Pandas",d:"40 min",dn:true},{t:"Data Visualization",d:"25 min",dn:true},{t:"Introduction to Machine Learning",d:"30 min",dn:true},{t:"Supervised Learning",d:"45 min",dn:true},{t:"Unsupervised Learning",d:"38 min",dn:true},{t:"Model Evaluation",d:"20 min",dn:false},{t:"Deploying ML Models",d:"35 min",dn:false}],
+  5:[{t:"React Fundamentals",d:"25 min",dn:true},{t:"JSX and Components",d:"20 min",dn:false},{t:"State and Props",d:"30 min",dn:false},{t:"Hooks Deep Dive",d:"40 min",dn:false},{t:"Next.js Introduction",d:"25 min",dn:false},{t:"Server Components",d:"35 min",dn:false},{t:"Data Fetching Patterns",d:"30 min",dn:false},{t:"Authentication",d:"28 min",dn:false},{t:"Deployment",d:"20 min",dn:false},{t:"Final Project",d:"60 min",dn:false}]
+};
+
+// Quiz data
+const qd={
+  1:[{q:"What is the primary purpose of visual hierarchy in UI design?",o:["Make the page colorful","Guide user attention to important elements first","Use as many fonts as possible","Fill empty space"],c:1},{q:"Which color model is most commonly used in digital design?",o:["CMYK","RGB","Pantone","RAL"],c:1},{q:"What does white space refer to?",o:["Only white background areas","Empty areas around and between elements","Areas where text should not go","A design mistake"],c:1},{q:"Which is a principle of good typography?",o:["Using 5+ fonts per page","Maintaining consistent line height","Always centering all text","Same size for all text"],c:1},{q:"What is a design system?",o:["A single design file","Reusable components, guidelines, and standards","A CSS framework only","A programming language"],c:1}],
+  2:[{q:"What is the output of typeof null in JavaScript?",o:["'null'","'undefined'","'object'","'boolean'"],c:2},{q:"Which method creates a new array from calling a function on every element?",o:["forEach()","map()","filter()","reduce()"],c:1},{q:"What does the === operator check?",o:["Value only","Type only","Value and type","Reference only"],c:2},{q:"What is a closure?",o:["A way to close the browser","Function with access to outer scope variables","A syntax error handler","A type of loop"],c:1},{q:"Which keyword declares a block-scoped variable that cannot be reassigned?",o:["var","let","const","static"],c:2}],
+  3:[{q:"What is the primary library for data manipulation in Python?",o:["NumPy","Pandas","Matplotlib","Scikit-learn"],c:1},{q:"Which type of ML uses labeled data?",o:["Unsupervised","Reinforcement","Supervised","Transfer"],c:2},{q:"What does the fit() method do in scikit-learn?",o:["Makes predictions","Trains the model","Evaluates performance","Saves the model"],c:1},{q:"What is overfitting?",o:["Good on train and test","Model is too simple","Memorizes training data, fails on new data","Model trains too fast"],c:2},{q:"Which visualization library is common in Python?",o:["D3.js","Matplotlib","Chart.js","Tableau"],c:1}],
+  5:[{q:"What is the virtual DOM in React?",o:["A browser feature","Lightweight copy of real DOM for efficient updates","A CSS framework","A server technology"],c:1},{q:"Which hook is used for side effects?",o:["useState","useContext","useEffect","useReducer"],c:2},{q:"What is a Next.js App Router feature?",o:["Only class components","Server Components by default","No routing","jQuery integration"],c:1},{q:"What does JSX stand for?",o:["JavaScript XML","Java Syntax Extension","JSON XML Syntax","JavaScript eXtreme"],c:0},{q:"Which pattern shares logic without props?",o:["Prop drilling","Render props or custom hooks","Inline styles","Global variables"],c:1}]
+};
+
+// Assignments
+const asns=[
+  {id:1,title:"Design a Mobile App Homepage",desc:"Create a high-fidelity mobile homepage for a fitness tracking app with navigation, hero, feature cards, and bottom tab bar.",course:"UI Design Fundamentals",due:"Feb 28, 2026",st:"graded",gr:"A",cid:1},
+  {id:2,title:"Build a Task Manager App",desc:"Build a functional task manager with vanilla JavaScript: add, edit, delete, filter. Use localStorage for persistence.",course:"JavaScript Mastery",due:"Mar 5, 2026",st:"submitted",gr:"",cid:2},
+  {id:3,title:"Exploratory Data Analysis Report",desc:"Perform EDA on the provided Titanic dataset with summary statistics, visualizations, and key insights in a Jupyter notebook.",course:"Data Science A-Z",due:"Mar 12, 2026",st:"pending",gr:"",cid:3},
+  {id:4,title:"Color Palette and Style Guide",desc:"Create a complete style guide for a SaaS product: color palette, typography scale, spacing system, and component examples.",course:"UI Design Fundamentals",due:"Mar 15, 2026",st:"pending",gr:"",cid:1},
+  {id:5,title:"REST API Integration Project",desc:"Build a weather dashboard fetching from a public API with current conditions, 5-day forecast, and error handling.",course:"JavaScript Mastery",due:"Mar 20, 2026",st:"pending",gr:"",cid:2},
+  {id:6,title:"Classification Model Comparison",desc:"Compare at least 3 classification algorithms. Document accuracy, precision, recall, and F1 scores.",course:"Data Science A-Z",due:"Mar 25, 2026",st:"pending",gr:"",cid:3},
+  {id:7,title:"Responsive Landing Page",desc:"Convert a desktop landing page design into a fully responsive page for mobile, tablet, and desktop.",course:"UI Design Fundamentals",due:"Jan 25, 2026",st:"graded",gr:"B+",cid:1}
+];
+
+const acts=[
+  {a:"Completed lesson",c:"UI Design Fundamentals",d:"Today",s:"completed"},
+  {a:"Submitted assignment",c:"JavaScript Mastery",d:"Yesterday",s:"submitted"},
+  {a:"Started lesson",c:"Data Science A-Z",d:"2 days ago",s:"in-progress"},
+  {a:"Completed quiz",c:"UI Design Fundamentals",d:"3 days ago",s:"completed"},
+  {a:"Earned certificate",c:"Python Basics",d:"1 week ago",s:"completed"}
+];
+
+// State
+let curPage='home',curCid=null,quizSt={cur:0,ans:[],sub:false},asnSubId=null,uploadedFile=null;
+
+// ===== NAVIGATION =====
+function go(p,d){
+  document.querySelectorAll('.page').forEach(e=>e.classList.remove('on'));
+  const el=document.getElementById('pg-'+p);if(!el)return;
+  setTimeout(()=>{el.classList.add('on');window.scrollTo({top:0,behavior:'smooth'})},50);
+  curPage=p;
+  document.querySelectorAll('.nl[data-p]').forEach(e=>e.classList.toggle('on',e.dataset.p===p));
+  // Stop video when leaving course detail
+  if(curPage!=='cdetail'){const v=document.getElementById('cvid');if(v){v.pause();resetVidUI();}}
+  if(p==='home')renderHome();
+  if(p==='courses')renderCourses();
+  if(p==='dashboard')renderDash();
+  if(p==='cdetail'&&d)renderCD(d);
+  if(p==='lessons'&&d)renderLS(d);
+  if(p==='quiz'&&d)startQuiz(d);
+  if(p==='assignments')renderAsn('all');
+  if(p==='profile')renderPTab('set');
+  setTimeout(obsFU,100);
+}
+
+// ===== TOAST =====
+function toast(msg,type='in'){
+  const c=document.getElementById('toastC'),t=document.createElement('div');
+  const ic={ok:'fa-check-circle',er:'fa-exclamation-circle',in:'fa-info-circle'};
+  t.className='toast t'+type;t.innerHTML=`<i class="fa-solid ${ic[type]||ic.in}"></i><span>${msg}</span>`;
+  c.appendChild(t);setTimeout(()=>{t.classList.add('rm');setTimeout(()=>t.remove(),300)},3000);
+}
+
+// ===== MOBILE NAV =====
+function toggleMob(){document.getElementById('mobNav').classList.toggle('open')}
+document.addEventListener('click',e=>{const m=document.getElementById('mobNav'),b=document.querySelector('.burg');if(m.classList.contains('open')&&!m.contains(e.target)&&!b.contains(e.target))m.classList.remove('open')});
+
+// ===== AUTH =====
+function doLogin(e){e.preventDefault();toast('Welcome back, Sophia!','ok');setTimeout(()=>go('dashboard'),600)}
+function doReg(e){e.preventDefault();toast('Account created successfully!','ok');setTimeout(()=>go('dashboard'),600)}
+
+// ===== COURSE CARD =====
+function cc(c,showP=false){
+  return`<div class="cd fu" style="cursor:pointer" onclick="go('cdetail',${c.id})"><img class="cdi" src="${c.img}" alt="${c.title}" loading="lazy"><div class="cdb"><span class="tag ${c.tc}">${c.tag}</span><div class="cdt">${c.title}</div><div class="cdp">${c.desc.substring(0,100)}...</div>${showP&&c.enr?`<div class="flx aic mb8" style="gap:8px"><div class="pb" style="flex:1"><div class="pf" style="width:${c.prog}%"></div></div><span style="font-size:.82rem;font-weight:600;color:var(--ac)">${c.prog}%</span></div>`:''}<div class="cdf"><div class="cdm"><span><i class="fa-solid fa-users"></i>${(c.stu/1000).toFixed(1)}k</span><span><i class="fa-solid fa-star" style="color:var(--wn)"></i>${c.rate}</span></div><span style="font-size:.82rem;color:var(--dim)"><i class="fa-solid fa-clock" style="margin-right:4px"></i>${c.dur}</span></div></div></div>`;
+}
+
+// ===== HOME =====
+function renderHome(){document.getElementById('homeGrid').innerHTML=courses.slice(0,3).map(c=>cc(c)).join('');setTimeout(obsFU,100)}
+
+// ===== COURSES =====
+function renderCourses(f='all'){
+  const cats=['all','design','dev','data','biz'],lbs={all:'All Courses',design:'Design',dev:'Development',data:'Data Science',biz:'Business'};
+  document.getElementById('cFilters').innerHTML=cats.map(c=>`<button class="fpi ${c===f?'on':''}" onclick="renderCourses('${c}')">${lbs[c]}</button>`).join('');
+  const fl=f==='all'?courses:courses.filter(c=>c.cat===f);
+  document.getElementById('cGrid').innerHTML=fl.map(c=>cc(c)).join('');
+  setTimeout(obsFU,100);
+}
+
+// ===== DASHBOARD =====
+function renderDash(){
+  document.getElementById('dashGrid').innerHTML=courses.filter(c=>c.enr).map(c=>cc(c,true)).join('');
+  document.getElementById('actTbl').innerHTML=acts.map(a=>`<tr><td style="font-weight:500">${a.a}</td><td style="color:var(--mut)">${a.c}</td><td style="color:var(--dim)">${a.d}</td><td><span class="bdg ${a.s==='completed'?'bok':a.s==='submitted'?'bwn':'ber'}">${a.s}</span></td></tr>`).join('');
+  setTimeout(obsFU,100);
+}
+
+// ===== COURSE DETAIL =====
+function renderCD(id){
+  curCid=id;const c=courses.find(x=>x.id===id);if(!c)return;
+  document.getElementById('cdHero').innerHTML=`<div class="cin"><img src="${c.instImg}" class="avs" alt="${c.inst}"><div><div class="cinn">${c.inst}</div><div class="cinl">Instructor</div></div></div><div class="cht">${c.title}</div><div class="chdd">${c.desc}</div><div class="cmb"><span><i class="fa-solid fa-users"></i>${c.stu.toLocaleString()} students</span><span><i class="fa-solid fa-star"></i>${c.rate} rating</span><span><i class="fa-solid fa-clock"></i>${c.dur}</span><span><i class="fa-solid fa-book"></i>${c.lessons} lessons</span></div>`;
+  document.getElementById('cDur').textContent=c.dur;
+  const eb=document.getElementById('enBtn');
+  if(c.enr){eb.textContent='Continue Learning';eb.onclick=()=>go('lessons',id);}
+  else{eb.textContent='Enroll Now';eb.onclick=doEnroll;}
+  resetVidUI();cTab('ov');
+}
+
+function doEnroll(){
+  const c=courses.find(x=>x.id===curCid);if(!c)return;
+  if(c.enr){go('lessons',curCid);return;}
+  c.enr=true;c.prog=0;
+  ld[c.id]=Array.from({length:Math.min(c.lessons,10)},(_,i)=>({t:`Lesson ${i+1}: Getting Started`,d:`${15+Math.floor(Math.random()*25)} min`,dn:false}));
+  qd[c.id]=Array.from({length:5},()=>({q:"Sample question about this course topic?",o:["Option A","Option B","Option C","Option D"],c:Math.floor(Math.random()*4)}));
+  toast(`Enrolled in "${c.title}"!`,'ok');renderCD(curCid);
+}
+
+function cTab(tab){
+  document.querySelectorAll('#cTabs .tb').forEach((t,i)=>t.classList.toggle('on',['ov','ls','rv'][i]===tab));
+  const c=courses.find(x=>x.id===curCid);if(!c)return;
+  const el=document.getElementById('cTabC');
+  if(tab==='ov'){
+    el.innerHTML=`<div class="cd" style="padding:28px"><div style="font-family:var(--fd);font-weight:600;font-size:1.15rem;margin-bottom:16px">About This Course</div><p style="color:var(--mut);line-height:1.8;margin-bottom:24px">${c.desc}</p><div style="font-family:var(--fd);font-weight:600;font-size:1.15rem;margin-bottom:16px">What You Will Learn</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">${['Understand core concepts and principles','Build real-world projects from scratch','Follow best practices and standards','Gain confidence in practical application','Learn troubleshooting techniques','Prepare for advanced topics'].map(i=>`<div class="flx aic" style="gap:8px;font-size:.9rem;color:var(--mut)"><i class="fa-solid fa-check" style="color:var(--ac);flex-shrink:0"></i>${i}</div>`).join('')}</div></div>`;
+  }else if(tab==='ls'){
+    const ls=ld[c.id]||[];el.innerHTML=`<div style="display:flex;flex-direction:column;gap:10px">${ls.map((l,i)=>`<div class="lei ${l.dn?'dn':''}" onclick="go('lessons',${c.id})"><div class="len">${l.dn?'<i class="fa-solid fa-check" style="font-size:.8rem"></i>':(i+1)}</div><div class="lef"><div class="let">${l.t}</div><div class="led"><i class="fa-solid fa-play-circle" style="margin-right:4px"></i>${l.d}</div></div><i class="fa-solid fa-chevron-right" style="color:var(--dim);font-size:.8rem"></i></div>`).join('')}</div>`;
+  }else{
+    el.innerHTML=`<div class="cd" style="padding:28px;text-align:center"><div style="font-family:var(--fd);font-size:3rem;font-weight:700;color:var(--wn);margin-bottom:4px">${c.rate}</div><div style="color:var(--dim);margin-bottom:16px">${c.stu.toLocaleString()} ratings</div><div style="display:flex;justify-content:center;gap:4px;margin-bottom:24px">${[1,2,3,4,5].map(s=>`<i class="fa-solid fa-star" style="color:${s<=Math.round(c.rate)?'var(--wn)':'var(--dim)'};font-size:1.2rem"></i>`).join('')}</div></div><div style="display:flex;flex-direction:column;gap:16px;margin-top:16px">${[{n:"David L.",d:"2 weeks ago",t:"Absolutely fantastic course. The instructor explains complex concepts in a very approachable way.",r:5},{n:"Maria S.",d:"1 month ago",t:"Great content and well-structured curriculum. The practical exercises really help.",r:4},{n:"James K.",d:"2 months ago",t:"This course exceeded my expectations. Clear explanations and useful projects.",r:5}].map(r=>`<div class="cd" style="padding:20px"><div class="flx jcsb aic mb8"><div class="flx aic" style="gap:8px"><img src="https://picsum.photos/seed/${r.n}/40/40.jpg" class="avs" alt="${r.n}"><div><div style="font-weight:600;font-size:.9rem">${r.n}</div><div style="font-size:.78rem;color:var(--dim)">${r.d}</div></div></div><div class="flx" style="gap:4px">${Array(r.r).fill('<i class="fa-solid fa-star" style="color:var(--wn);font-size:.75rem"></i>').join('')}</div></div><p style="font-size:.88rem;color:var(--mut);line-height:1.6">${r.t}</p></div>`).join('')}</div>`;
+  }
+}
+
+// ===== VIDEO PLAYER =====
+function resetVidUI(){
+  const v=document.getElementById('cvid'),ov=document.getElementById('vidOv'),fi=document.getElementById('vFill');
+  if(v){v.currentTime=0;fi.style.width='0%';}
+  ov.classList.remove('hid');
+  document.getElementById('vbPlay').innerHTML='<i class="fa-solid fa-play"></i>';
+  document.getElementById('vTime').textContent='0:00 / 0:00';
+}
+function vidToggle(){
+  const v=document.getElementById('cvid'),ov=document.getElementById('vidOv');
+  if(v.paused){v.play();ov.classList.add('hid');document.getElementById('vbPlay').innerHTML='<i class="fa-solid fa-pause"></i>';}
+  else{v.pause();ov.classList.remove('hid');document.getElementById('vbPlay').innerHTML='<i class="fa-solid fa-play"></i>';}
+}
+function vidSeek(e){const v=document.getElementById('cvid'),r=e.currentTarget.getBoundingClientRect(),p=(e.clientX-r.left)/r.width;if(v.duration)v.currentTime=p*v.duration;}
+function vidMute(){const v=document.getElementById('cvid');v.muted=!v.muted;document.getElementById('vbMute').innerHTML=v.muted?'<i class="fa-solid fa-volume-xmark"></i>':'<i class="fa-solid fa-volume-high"></i>';}
+function vidVol(val){document.getElementById('cvid').volume=val;}
+function vidFS(){const w=document.getElementById('vpWrap');if(w.requestFullscreen)w.requestFullscreen();else if(w.webkitRequestFullscreen)w.webkitRequestFullscreen();}
+function fmtTime(s){if(isNaN(s))return'0:00';const m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+(sec<10?'0':'')+sec;}
+
+// Video events
+document.addEventListener('DOMContentLoaded',()=>{
+  const v=document.getElementById('cvid');
+  v.addEventListener('timeupdate',()=>{
+    const p=v.duration?(v.currentTime/v.duration)*100:0;
+    document.getElementById('vFill').style.width=p+'%';
+    document.getElementById('vTime').textContent=fmtTime(v.currentTime)+' / '+fmtTime(v.duration);
+  });
+  v.addEventListener('ended',()=>{document.getElementById('vidOv').classList.remove('hid');document.getElementById('vbPlay').innerHTML='<i class="fa-solid fa-play"></i>';});
+  v.addEventListener('loadedmetadata',()=>{document.getElementById('vTime').textContent='0:00 / '+fmtTime(v.duration);});
+});
+
+// ===== LESSONS =====
+function renderLS(id){
+  curCid=id;const c=courses.find(x=>x.id===id);if(!c)return;
+  document.getElementById('lsTitle').textContent=c.title;
+  document.getElementById('lsSub').textContent='Work through each lesson at your own pace';
+  const ls=ld[c.id]||[];
+  document.getElementById('lsList').innerHTML=ls.map((l,i)=>`<div class="lei ${l.dn?'dn':''}" onclick="togLesson(${c.id},${i})"><div class="len">${l.dn?'<i class="fa-solid fa-check" style="font-size:.8rem"></i>':(i+1)}</div><div class="lef"><div class="let">${l.t}</div><div class="led"><i class="fa-solid fa-play-circle" style="margin-right:4px"></i>${l.d}</div></div><span class="bdg ${l.dn?'bok':'bwn'}">${l.dn?'Done':'Pending'}</span></div>`).join('');
+  updLsProg(c.id);
+}
+function togLesson(cid,i){
+  const ls=ld[cid];if(!ls)return;ls[i].dn=!ls[i].dn;
+  const c=courses.find(x=>x.id===cid);
+  if(c){const dn=ls.filter(l=>l.dn).length;c.prog=Math.round((dn/ls.length)*100);}
+  renderLS(cid);if(ls[i].dn)toast('Lesson marked as complete!','ok');
+}
+function updLsProg(cid){
+  const ls=ld[cid]||[],dn=ls.filter(l=>l.dn).length,tot=ls.length,pct=tot?Math.round(dn/tot*100):0;
+  const circ=264-document.getElementById('lsCirc').setAttribute('stroke-dasharray',264);
+  document.getElementById('lsCirc').setAttribute('stroke-dashoffset',264-264*pct/100);
+  document.getElementById('lsPct').textContent=pct+'%';
+  document.getElementById('lsTxt').textContent=`${dn} of ${tot} completed`;
+}
+
+// ===== QUIZ =====
+function startQuiz(cid){
+  curCid=cid;const qs=qd[cid]||[];
+  if(!qs.length){document.getElementById('quizC').innerHTML=`<div class="cd" style="padding:40px;text-align:center"><i class="fa-solid fa-clipboard-question" style="font-size:2.5rem;color:var(--dim);margin-bottom:16px"></i><div style="font-family:var(--fd);font-size:1.2rem;font-weight:600;margin-bottom:8px">No Quiz Available</div><div style="color:var(--mut);margin-bottom:24px">This course doesn't have a quiz yet.</div><button class="btn bs" onclick="go('lessons',${cid})"><i class="fa-solid fa-arrow-left"></i> Back to Lessons</button></div>`;return;}
+  quizSt={cur:0,ans:new Array(qs.length).fill(-1),sub:false};renderQQ();
+}
+function renderQQ(){
+  const qs=qd[curCid]||[],q=qs[quizSt.cur],n=quizSt.cur+1,L=['A','B','C','D'];
+  document.getElementById('quizC').innerHTML=`<div class="fu"><div class="flx jcsb aic mb24"><button class="btn bgh bsm" onclick="go('lessons',${curCid})"><i class="fa-solid fa-arrow-left"></i> Back</button><span style="font-size:.88rem;color:var(--mut)">Question ${n} of ${qs.length}</span></div><div class="pb mb32"><div class="pf" style="width:${n/qs.length*100}%"></div></div><div style="font-family:var(--fd);font-size:1.3rem;font-weight:600;margin-bottom:24px;line-height:1.4">${q.q}</div><div>${q.o.map((o,i)=>`<div class="qo ${quizSt.ans[quizSt.cur]===i?'sel':''}" onclick="selQO(${i})"><div class="qol">${L[i]}</div><div style="font-size:.95rem">${o}</div></div>`).join('')}</div><div class="flx jcsb mt32">${quizSt.cur>0?`<button class="btn bs" onclick="quizSt.cur--;renderQQ()"><i class="fa-solid fa-arrow-left"></i> Previous</button>`:'<div></div>'}${quizSt.cur<qs.length-1?`<button class="btn bp" onclick="quizSt.cur++;renderQQ()">Next <i class="fa-solid fa-arrow-right"></i></button>`:`<button class="btn bp" onclick="subQuiz()"><i class="fa-solid fa-check"></i> Submit Quiz</button>`}</div></div>`;
+  setTimeout(obsFU,50);
+}
+function selQO(i){if(quizSt.sub)return;quizSt.ans[quizSt.cur]=i;renderQQ();}
+function subQuiz(){
+  const qs=qd[curCid],un=quizSt.ans.filter(a=>a===-1).length;
+  if(un>0){toast(`You have ${un} unanswered question(s)!`,'er');return;}
+  quizSt.sub=true;let cor=0;qs.forEach((q,i)=>{if(quizSt.ans[i]===q.c)cor++;});
+  const pct=Math.round(cor/qs.length*100),pass=pct>=60,L=['A','B','C','D'];
+  document.getElementById('quizC').innerHTML=`<div class="qr fu"><div style="width:120px;height:120px;border-radius:50%;background:${pass?'var(--acd)':'rgba(248,113,113,.12)'};display:flex;align-items:center;justify-content:center;margin:0 auto 24px"><i class="fa-solid ${pass?'fa-trophy':'fa-rotate-right'}" style="font-size:2.5rem;color:${pass?'var(--ac)':'var(--er)'}"></i></div><div class="qrs" style="color:${pass?'var(--ac)':'var(--er)'}">${pct}%</div><div class="qrl">${cor} out of ${qs.length} correct — ${pass?'You passed!':'Keep practicing!'}</div><div class="flx fw" style="gap:8px;justify-content:center"><button class="btn bs" onclick="startQuiz(${curCid})"><i class="fa-solid fa-rotate-right"></i> Retake</button><button class="btn bp" onclick="go('lessons',${curCid})"><i class="fa-solid fa-book-open"></i> Back to Lessons</button></div><div class="dv" style="max-width:400px;margin:32px auto"></div><div style="text-align:left;max-width:600px;margin:0 auto"><div style="font-family:var(--fd);font-weight:600;margin-bottom:16px">Review Answers</div>${qs.map((q,i)=>{const ok=quizSt.ans[i]===q.c;return`<div style="margin-bottom:16px;padding:16px;background:var(--card);border:1px solid var(--bd);border-radius:var(--rs);border-left:3px solid ${ok?'var(--ok)':'var(--er)'}"><div style="font-weight:600;font-size:.9rem;margin-bottom:8px">${i+1}. ${q.q}</div><div style="font-size:.85rem;color:var(--mut)">Your answer: <span style="color:${ok?'var(--ok)':'var(--er)'};font-weight:600">${L[quizSt.ans[i]]}. ${q.o[quizSt.ans[i]]}</span></div>${!ok?`<div style="font-size:.85rem;color:var(--mut);margin-top:4px">Correct: <span style="color:var(--ok);font-weight:600">${L[q.c]}. ${q.o[q.c]}</span></div>`:''}</div>`;}).join('')}</div></div>`;
+}
+
+// ===== ASSIGNMENTS =====
+function renderAsn(f='all'){
+  const fl=f==='all'?asns:asns.filter(a=>a.st===f),el=document.getElementById('asnList');
+  if(!fl.length){el.innerHTML=`<div class="cd" style="padding:40px;text-align:center"><i class="fa-solid fa-inbox" style="font-size:2rem;color:var(--dim);margin-bottom:12px"></i><div style="color:var(--mut)">No assignments in this category.</div></div>`;return;}
+  el.innerHTML=fl.map(a=>{const bc=a.st==='graded'?'bok':a.st==='submitted'?'bwn':'ber',bl=a.st.charAt(0).toUpperCase()+a.st.slice(1);return`<div class="asc fu"><div class="ash"><div><div class="ast">${a.title}</div><div style="font-size:.82rem;color:var(--ac);margin-top:4px">${a.course}</div></div><span class="bdg ${bc}">${bl}${a.gr?' — '+a.gr:''}</span></div><div class="asd">${a.desc}</div><div class="flx jcsb aic fw" style="gap:16px"><div class="asm"><span><i class="fa-regular fa-calendar"></i>Due: ${a.due}</span></div>${a.st==='pending'?`<button class="btn bp bsm" onclick="openSub(${a.id})"><i class="fa-solid fa-paper-plane"></i> Submit</button>`:''}${a.st==='submitted'?`<span style="font-size:.85rem;color:var(--wn)"><i class="fa-solid fa-hourglass-half"></i> Awaiting review</span>`:''}${a.st==='graded'?`<span style="font-size:.85rem;color:var(--ok)"><i class="fa-solid fa-check-circle"></i> Graded</span>`:''}</div></div>`;}).join('');
+  setTimeout(obsFU,100);
+}
+function filtAsn(f,btn){document.querySelectorAll('#pg-assignments .tb').forEach(t=>t.classList.remove('on'));if(btn)btn.classList.add('on');renderAsn(f);}
+
+// ===== FILE UPLOAD =====
+function handleFile(input){
+  const file=input.files[0];if(!file)return;
+  const max=10*1024*1024;
+  if(file.size>max){toast('File size exceeds 10MB limit','er');input.value='';return;}
+  uploadedFile=file;
+  const ext=file.name.split('.').pop().toLowerCase();
+  const icons={pdf:'fa-file-pdf',zip:'fa-file-zipper',doc:'fa-file-word',docx:'fa-file-word',png:'fa-file-image',jpg:'fa-file-image',jpeg:'fa-file-image'};
+  const colors={pdf:'var(--er)',zip:'var(--wn)',doc:'var(--ac)',docx:'var(--ac)',png:'var(--or)',jpg:'var(--or)',jpeg:'var(--or)'};
+  const icon=icons[ext]||'fa-file';const color=colors[ext]||'var(--mut)';
+  const size=file.size<1024?file.size+' B':file.size<1048576?(file.size/1024).toFixed(1)+' KB':(file.size/1048576).toFixed(1)+' MB';
+  document.getElementById('uzone').classList.add('hf');
+  document.getElementById('fPreview').innerHTML=`<div class="uf"><div class="ufi" style="background:${color}22;color:${color}"><i class="fa-solid ${icon}"></i></div><div class="ufn"><div class="ufnn">${file.name}</div><div class="ufns">${size}</div></div><button class="ufr" onclick="removeFile()" type="button"><i class="fa-solid fa-xmark"></i></button></div>`;
+  toast('File attached successfully','ok');
+}
+function removeFile(){
+  uploadedFile=null;document.getElementById('fInput').value='';
+  document.getElementById('uzone').classList.remove('hf');
+  document.getElementById('fPreview').innerHTML='';
+}
+
+// Drag and drop
+document.addEventListener('DOMContentLoaded',()=>{
+  const z=document.getElementById('uzone');if(!z)return;
+  z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('dg');});
+  z.addEventListener('dragleave',()=>z.classList.remove('dg'));
+  z.addEventListener('drop',e=>{e.preventDefault();z.classList.remove('dg');
+    const f=e.dataTransfer.files[0];if(f){const dt=new DataTransfer();dt.items.add(f);document.getElementById('fInput').files=dt.files;handleFile(document.getElementById('fInput'));}
+  });
+});
+
+// ===== SUBMIT MODAL =====
+function openSub(id){asnSubId=id;const a=asns.find(x=>x.id===id);document.getElementById('mAsnName').value=a.title;document.getElementById('mNotes').value='';removeFile();document.getElementById('subModal').classList.add('open');}
+function closeMo(id){document.getElementById(id).classList.remove('open');}
+function doSubmit(e){
+  e.preventDefault();if(!uploadedFile){toast('Please attach a file before submitting','er');return;}
+  const a=asns.find(x=>x.id===asnSubId);if(a){a.st='submitted';toast('Assignment submitted successfully!','ok');}
+  closeMo('subModal');renderAsn('all');
+  document.querySelectorAll('#pg-assignments .tb').forEach(t=>t.classList.remove('on'));
+  document.querySelector('#pg-assignments .tb').classList.add('on');
+}
+document.getElementById('subModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeMo('subModal')});
+
+// ===== PROFILE =====
+function renderPTab(tab){
+  const el=document.getElementById('pTabC');
+  if(tab==='set'){
+    el.innerHTML=`<div class="cd fu" style="padding:28px"><div style="font-family:var(--fd);font-weight:600;font-size:1.1rem;margin-bottom:24px">Personal Information</div><form onsubmit="event.preventDefault();toast('Profile updated!','ok')"><div style="display:grid;grid-template-columns:1fr 1fr;gap:16px"><div class="fg"><label class="fl">First Name</label><input class="fi" value="Sophia"></div><div class="fg"><label class="fl">Last Name</label><input class="fi" value="Mitchell"></div></div><div class="fg"><label class="fl">Email Address</label><input class="fi" type="email" value="sophia.mitchell@email.com"></div><div class="fg"><label class="fl">Bio</label><textarea class="fi" rows="3" style="resize:vertical">Passionate about learning full-stack development. Currently focused on JavaScript, React, and data science fundamentals.</textarea></div><div class="fg"><label class="fl">Time Zone</label><select class="fi" style="cursor:pointer"><option>UTC-8 (Pacific Time)</option><option>UTC-5 (Eastern Time)</option><option selected>UTC+0 (London)</option><option>UTC+5:30 (India)</option><option>UTC+8 (Singapore)</option></select></div><button class="btn bp" type="submit"><i class="fa-solid fa-save"></i> Save Changes</button></form></div><div class="cd fu mt24" style="padding:28px"><div style="font-family:var(--fd);font-weight:600;font-size:1.1rem;margin-bottom:24px">Notification Preferences</div><div style="display:flex;flex-direction:column;gap:0">${['Course updates and new lessons','Assignment reminders and deadlines','Quiz results and feedback','Promotional offers and new courses','Weekly learning summary email'].map((l,i)=>`<label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:14px 0;border-bottom:1px solid var(--bd)"><span style="font-size:.9rem">${l}</span><div style="position:relative;width:44px;height:24px"><input type="checkbox" ${i!==3?'checked':''} style="opacity:0;position:absolute;inset:0;cursor:pointer;z-index:1" onchange="this.nextElementSibling.firstElementChild.style.right=this.checked?'2px':'auto';this.nextElementSibling.firstElementChild.style.left=this.checked?'auto':'2px';this.nextElementSibling.style.background=this.checked?'var(--ac)':'var(--dim)'"><div style="width:44px;height:24px;border-radius:12px;background:${i!==3?'var(--ac)':'var(--dim)'};transition:var(--t);position:relative"><div style="width:20px;height:20px;border-radius:50%;background:white;position:absolute;top:2px;${i!==3?'right:2px':'left:2px'};transition:var(--t);box-shadow:0 1px 4px rgba(0,0,0,.2)"></div></div></div></label>`).join('')}</div></div>`;
+  }else if(tab==='cert'){
+    el.innerHTML=`<div style="display:flex;flex-direction:column;gap:16px">${[{t:"UI Design Fundamentals",ins:"Sarah Chen",d:"Dec 15, 2025",id:"CERT-2025-001"},{t:"Python Basics",ins:"David Kim",d:"Nov 28, 2025",id:"CERT-2025-002"}].map(c=>`<div class="cd fu" style="padding:24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap"><div style="width:60px;height:60px;border-radius:12px;background:linear-gradient(135deg,var(--acd),rgba(0,212,170,.25));display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fa-solid fa-certificate" style="font-size:1.5rem;color:var(--ac)"></i></div><div style="flex:1;min-width:200px"><div style="font-family:var(--fd);font-weight:600;font-size:1.05rem">${c.t}</div><div style="font-size:.82rem;color:var(--dim);margin-top:2px">${c.ins} — Issued ${c.d}</div><div style="font-size:.78rem;color:var(--dim);margin-top:2px">ID: ${c.id}</div></div><button class="btn bs bsm" onclick="toast('Certificate downloaded!','ok')"><i class="fa-solid fa-download"></i> Download</button></div>`).join('')}<div class="cd fu" style="padding:40px;text-align:center;border-style:dashed"><i class="fa-solid fa-lock" style="font-size:1.5rem;color:var(--dim);margin-bottom:12px"></i><div style="color:var(--mut);font-size:.9rem">Complete more courses to earn additional certificates</div></div></div>`;
+  }else{
+    el.innerHTML=`<div class="cd" style="padding:0;overflow:hidden"><div class="tw"><table><thead><tr><th>Date</th><th>Activity</th><th>Course</th><th>Details</th></tr></thead><tbody>${[{d:"Jan 20, 2026",a:"Completed lesson",c:"UI Design Fundamentals",x:"Visual Hierarchy"},{d:"Jan 19, 2026",a:"Submitted assignment",c:"JavaScript Mastery",x:"Task Manager App"},{d:"Jan 18, 2026",a:"Completed lesson",c:"Data Science A-Z",x:"Model Evaluation"},{d:"Jan 17, 2026",a:"Passed quiz",c:"UI Design Fundamentals",x:"Score: 100%"},{d:"Jan 16, 2026",a:"Enrolled in course",c:"React and Next.js",x:"Modern Frontend"},{d:"Jan 15, 2026",a:"Completed assignment",c:"UI Design Fundamentals",x:"Responsive Landing Page — B+"},{d:"Jan 14, 2026",a:"Started lesson",c:"React and Next.js",x:"React Fundamentals"},{d:"Jan 12, 2026",a:"Earned certificate",c:"Python Basics",x:"CERT-2025-002"}].map(a=>`<tr><td style="white-space:nowrap;color:var(--dim);font-size:.85rem">${a.d}</td><td style="font-weight:500">${a.a}</td><td style="color:var(--mut)">${a.c}</td><td style="color:var(--dim);font-size:.85rem">${a.x}</td></tr>`).join('')}</tbody></table></div></div>`;
+  }
+  setTimeout(obsFU,100);
+}
+function pTab(tab,btn){if(btn){document.querySelectorAll('#pg-profile .tb').forEach(t=>t.classList.remove('on'));btn.classList.add('on');}renderPTab(tab);}
+
+// ===== SCROLL FX =====
+function obsFU(){
+  const ob=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis')});},{threshold:.1,rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.fu:not(.vis)').forEach(e=>ob.observe(e));
+}
+window.addEventListener('scroll',()=>document.getElementById('navbar').classList.toggle('sc',window.scrollY>20));
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded',()=>{renderHome();obsFU();});
+</script>
+</body>
+</html>
